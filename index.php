@@ -1,7 +1,7 @@
 <?php
 
 use Slim\Factory\AppFactory;
-
+use Vanier\Api\Controllers\TripsController;
 
 require __DIR__ . '/vendor/autoload.php';
  // Include the file that contains the application's global configuration settings,
@@ -16,13 +16,6 @@ $app->addBodyParsingMiddleware();
 // NOTE: the error middleware MUST be added last.
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
 $errorMiddleware->getDefaultErrorHandler()->forceContentType(APP_MEDIA_TYPE_JSON);
-
-
-//Routing For StopsController
-$app->get('/stops', [StopsController::class, 'getAllStops']);
-$app->get('/stops/{stop_id}', [StopController::class, 'getStopInfo']);
-
-
 
 // TODO: change the name of the subdirectory here.
 // You also need to change it in .htaccess

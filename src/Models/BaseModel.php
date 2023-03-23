@@ -68,6 +68,27 @@ class BaseModel
         $this->db->query("SET NAMES utf8mb4");
     }
 
+    protected function paginate(string $sql, array $filters){
+        //- Step 1) Get number of rows/rows count
+        $rows_count = $this->count($sql, $filters);
+        //- Step 2) Instantiate the PaginationHelper
+        $paginator = new PaginationHelper(
+            $this->current_page, 
+            $this->records_per_page,
+            $rows_count
+        );
+        //- Step 3) Get the computed offset from the paginator
+        $offset = $paginator->getOffset();
+        //- Step 4) Contain the number of records there should be in the result set
+        $sql .= " LIMIT $offset , $this->records_per_page";
+        //- Step 5) Include the pagination info in the results
+        $data = $paginator->getPaginationInfo();
+        //- Step 6) Query the table to retrieve the partial result/requested page
+        $data["data"] = $this->run($sql, $filters)->fetchAll();
+
+        return $data;
+    }
+
     /**
      * get PDO instance
      * 

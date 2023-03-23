@@ -19,3 +19,11 @@ $app->get('/hello', function (Request $request, Response $response, $args) {
     $response->getBody()->write("Reporting! Hello there!");    
     return $response;
 });
+
+//Routing For TripsController
+$app->get('/trips', [TripsController::class, 'getAllTrips']);
+$app->get('/trips/{trip_id}', [TripsController::class , 'getTripInfo']);
+
+//Routing For StopsController
+$app->get('/stops', [StopsController::class, 'getAllStops']);
+$app->get('/stops/{stop_id}', [StopController::class, 'getStopInfo']);

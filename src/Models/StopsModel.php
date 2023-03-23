@@ -14,8 +14,9 @@ class StopsModel extends BaseModel{
         return $this->run($sql, [":stop_id"=> $stop_id])->fetchAll();
     }
 
-    public function getAll(){
+    public function getAll($filters){
+        $filters = [];
         $sql = "SELECT * FROM $this->table_name";
-        return $this->run($sql)->fetchAll();
+        return $this->paginate($sql, $filters);
     }
 }
