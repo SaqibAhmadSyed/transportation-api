@@ -1,6 +1,6 @@
-# Slim-Based Template
+# Transportation-API
 
-A template to be used to create REST-based Web services using the latest version of **Slim** PHP micro framework.
+Create REST-based Web services using the latest version of **Slim** PHP micro framework to extract records of all STM related information.
 
 ## Deployment Instructions
 
