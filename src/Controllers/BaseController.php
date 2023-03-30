@@ -5,14 +5,20 @@ namespace Vanier\Api\Controllers;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
+/**
+ * Base controller that handled redundant code here
+ */
 class BaseController
 {
-    protected function prepareOkResponse(Response $response, array $data)
+    
+    protected function prepareOkResponse(Request $request, Response $response, $data)
     {
-        // var_dump($data);
-        $json_data = json_encode($data);
-        //-- Write data into the response's body.        
+        // takes the data from the parameter and converts it to JSON
+        $json_data = json_encode($data); 
+        // Writes in the body the data in json format
         $response->getBody()->write($json_data);
-        return $response->withStatus(HTTP_OK)->withAddedHeader(HEADERS_CONTENT_TYPE, APP_MEDIA_TYPE_JSON);
+        // returns the prepared response
+        return $response->withStatus(HTTP_OK)->withHeader('Content-Type', 'application/json');
     }
 }
+

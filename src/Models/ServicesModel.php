@@ -14,8 +14,9 @@ class ServicesModel extends BaseModel{
         return $this->run($sql, [":service_id"=> $service_id])->fetchAll();
     }
 
-    public function getAll(){
+    public function getAll($filters){
+        $filters = [];
         $sql = "SELECT * FROM $this->table_name";
-        return $this->run($sql)->fetchAll();
+        return $this->paginate($sql, $filters);
     }
 }

@@ -14,8 +14,13 @@ class RoutesModel extends BaseModel{
         return $this->run($sql, [":route_id"=> $route_id])->fetchAll();
     }
 
-    public function getAll(){
+    public function getAll($filters){
+        $query_value = [];
         $sql = "SELECT * FROM $this->table_name";
-        return $this->run($sql)->fetchAll();
+        if (isset($filters["long_name"])) {
+            $sql .= " AND long_name LIKE CONCAT('%', :long_name,'%')";
+            $query_value[":long_name"] = $filters["long_name"];
+        }
+        return $this->paginate($sql, $query_value);
     }
 }
