@@ -17,8 +17,10 @@ class StopsController extends BaseController
     //ROUTE: //stops(stop_id)
     public function getStopInfo(Response $response, array $uri_args){
         $stop_id = $uri_args["stop_id"];
-        $data = $this->stop_model->getStopById($stop_id);
-        $this->prepareOkResponse($response, $data, HTTP_OK);
+        $data = $this->stop_model->getStopById($stop_id);$json_data = json_encode($data);
+        $response->getBody()->write($json_data);
+        return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
+        //$this->prepareOkResponse($response, $data, HTTP_OK);
     }
 
     public function getAllStops(Request $request, Response $response){

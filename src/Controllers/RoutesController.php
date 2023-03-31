@@ -16,13 +16,21 @@ class RoutesController extends BaseController
     public function getRoutebyId(Request $request, Response $response, array $uri_args){
         $route_id = $uri_args["route_id"];
         $data = $this->route_model->getRouteById($route_id);
-        $this->prepareOkResponse($request, $response, $data);
+        $json_data = json_encode($data);
+        $response->getBody()->write($json_data);
+        return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
+        //$this->prepareOkResponse($request, $response, $data);
     }
 
     public function getAllRoutes(Request $request, Response $response){
         $filters = $request->getQueryParams();
+        $route_model = new RoutesModel();
         // $this->route_model->setPaginationOptions($filters['page'], $filters['page_size']);
-        $data = $this->route_model->getAll($filters);
-        $this->prepareOkResponse($request, $response, $data);
+        $data = $route_model->getAll($filters);
+        //$route_model->setPaginationOptions($filters['page'], $filters['page_size']);
+        $json_data = json_encode($data);
+        $response->getBody()->write($json_data);
+        return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
+        //$this->prepareOkResponse($request, $response, $data);
     }
 }

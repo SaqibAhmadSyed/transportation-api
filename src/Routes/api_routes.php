@@ -2,8 +2,9 @@
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
-use Vanier\Api\Controllers\AboutController;
+use Vanier\Api\Controllers\TripsController;
 use Vanier\Api\Controllers\RoutesController;
+use Vanier\Api\Controllers\StopsController;
 
 // Import the app instance into this file's scope.
 global $app;
@@ -27,7 +28,7 @@ $app->get('/trips/{trip_id}', [TripsController::class , 'getTripInfo']);
 
 //Routing For StopsController
 $app->get('/stops', [StopsController::class, 'getAllStops']);
-$app->get('/stops/{stop_id}', [StopController::class, 'getStopInfo']);
+$app->get('/stops/{stop_id}', [StopsController::class, 'getStopInfo']);
 
 //Routing For TripsController
 $app->get('/schedules', [TripsController::class, 'getAllTrips']);
