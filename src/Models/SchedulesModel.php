@@ -5,6 +5,7 @@ use Vanier\Api\Models\BaseModel;
 
 class SchedulesModel extends BaseModel{
     private $table_name = "schedule";
+    
     public function __construct(){
         parent::__construct();
     }
@@ -16,10 +17,14 @@ class SchedulesModel extends BaseModel{
 
     public function getAll($filters){
         $query_value = [];
-        $sql = "SELECT * FROM $this->table_name";
-        if (isset($filters["description"])) {
-            $sql .= " AND film.description LIKE CONCAT('%', :description,'%')";
-            $query_value[":description"] = $filters["description"];
+        $sql = "SELECT * FROM $this->table_name WHERE 1";
+        if (isset($filters["arrival_time"])) {
+            $sql .= " AND arrival_time LIKE CONCAT('%', :arrival_time,'%')";
+            $query_value[":arrival_time"] = $filters["arrival_time"];
+        }
+        if (isset($filters["departure_time"])) {
+            $sql .= " AND departure_time LIKE CONCAT('%', :departure_time,'%')";
+            $query_value[":departure_time"] = $filters["departure_time"];
         }
         return $this->paginate($sql, $query_value);
     }

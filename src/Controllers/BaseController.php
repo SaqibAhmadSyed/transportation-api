@@ -4,14 +4,20 @@ namespace Vanier\Api\Controllers;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Vanier\Api\Validations\Input;
+use Slim\Exception\HttpBadRequestException;
 
 /**
  * Base controller that handled redundant code here
  */
 class BaseController
 {
-    
-    protected function prepareOkResponse(Request $request, Response $response, $data)
+    private $validation;
+
+    public function __construct() {
+        $this->validation = new Input();
+    }
+    protected function prepareOkResponse(Response $response, $data)
     {
         // takes the data from the parameter and converts it to JSON
         $json_data = json_encode($data); 

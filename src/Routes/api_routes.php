@@ -5,6 +5,7 @@ use Slim\Factory\AppFactory;
 use Vanier\Api\Controllers\TripsController;
 use Vanier\Api\Controllers\RoutesController;
 use Vanier\Api\Controllers\StopsController;
+use Vanier\Api\Controllers\SchedulesController;
 
 // Import the app instance into this file's scope.
 global $app;
@@ -22,18 +23,18 @@ $app->get('/hello', function (Request $request, Response $response, $args) {
     return $response;
 });
 
-//Routing For TripsController
+//ROUTE: /trips
 $app->get('/trips', [TripsController::class, 'getAllTrips']);
 $app->get('/trips/{trip_id}', [TripsController::class , 'getTripInfo']);
 
-//Routing For StopsController
+//ROUTE: /stops
 $app->get('/stops', [StopsController::class, 'getAllStops']);
 $app->get('/stops/{stop_id}', [StopsController::class, 'getStopInfo']);
 
-//Routing For TripsController
-$app->get('/schedules', [TripsController::class, 'getAllTrips']);
-$app->get('/schedules/{schedule_id}', [TripsController::class , 'getTripInfo']);
+//ROUTE: /schedules
+$app->get('/schedules', [SchedulesController::class, 'getAllSchedules']);
+$app->get('/schedules/{schedule_id}', [SchedulesController::class , 'getScheduleById']);
 
-//Routing For StopsController
+//ROUTE: /routes
 $app->get('/routes', [RoutesController::class, 'getAllRoutes']);
 $app->get('/routes/{route_id}', [RoutesController::class, 'getRouteById']);

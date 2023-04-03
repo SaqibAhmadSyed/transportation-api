@@ -13,17 +13,16 @@ class SchedulesController extends BaseController
         $this->schedule_model = new SchedulesModel();
     }
 
-    //ROUTE: //trips(trip_id)
-    public function getTripInfo(Response $response, array $uri_args){
+    public function getScheduleById(Request $request, Response $response, array $uri_args){
         $schedule_id = $uri_args["schedule_id"];
         $data = $this->schedule_model->getScheduleById($schedule_id);
-        $this->prepareOkResponse($response, $data, HTTP_OK);
+        return $this->prepareOkResponse($response, $data);
     }
 
-    public function getAllTrips(Request $request, Response $response){
+    public function getAllSchedules(Request $request, Response $response){
         $filters = $request->getQueryParams();
         $data = $this->schedule_model->getAll($filters);
-        $this->schedule_model->setPaginationOptions($filters['page'], $filters['page_size']);
-        $this->prepareOkResponse($response, $data, HTTP_OK);
+        //$this->schedule_model->setPaginationOptions($filters['page'], $filters['page_size']);
+        return $this->prepareOkResponse($response, $data);
     }
 }

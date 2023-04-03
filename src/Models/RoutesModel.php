@@ -16,10 +16,14 @@ class RoutesModel extends BaseModel{
 
     public function getAll($filters){
         $query_value = [];
-        $sql = "SELECT * FROM $this->table_name";
-        if (isset($filters["long_name"])) {
-            $sql .= " AND long_name LIKE CONCAT('%', :long_name,'%')";
-            $query_value[":long_name"] = $filters["long_name"];
+        $sql = "SELECT * FROM $this->table_name WHERE 1";
+        if (isset($filters["name"])) {
+            $sql .= " AND name LIKE CONCAT('%', :name,'%')";
+            $query_value[":name"] = $filters["name"];
+        }
+        if (isset($filters["type"])) {
+            $sql .= " AND type LIKE CONCAT('%', :type,'%')";
+            $query_value[":type"] = $filters["type"];
         }
         return $this->paginate($sql, $query_value);
     }

@@ -15,18 +15,16 @@ class StopsController extends BaseController
     }
     
     //ROUTE: //stops(stop_id)
-    public function getStopInfo(Response $response, array $uri_args){
+    public function getStopInfo(Request $request, Response $response, array $uri_args){
         $stop_id = $uri_args["stop_id"];
-        $data = $this->stop_model->getStopById($stop_id);$json_data = json_encode($data);
-        $response->getBody()->write($json_data);
-        return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
-        //$this->prepareOkResponse($response, $data, HTTP_OK);
+        $data = $this->stop_model->getStopById($stop_id);
+        return $this->prepareOkResponse($response, $data);
     }
 
     public function getAllStops(Request $request, Response $response){
         $filters = $request->getQueryParams();
-        $this->stop_model->setPaginationOptions($filters['page'], $filters['page_size']);
+        //$this->stop_model->setPaginationOptions($filters['page'], $filters['page_size']);
         $data = $this->stop_model->getAll($filters);
-        $this->prepareOkResponse($response, $data, HTTP_OK);
+        return $this->prepareOkResponse($response, $data);
     }
 }

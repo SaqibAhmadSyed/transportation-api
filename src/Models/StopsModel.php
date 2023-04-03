@@ -16,7 +16,7 @@ class StopsModel extends BaseModel{
 
     public function getAll($filters){
         $query_value = [];
-        $sql = "SELECT * FROM $this->table_name";
+        $sql = "SELECT * FROM $this->table_name WHERE 1";
         if (isset($filters["description"])) {
             $sql .= " AND film.description LIKE CONCAT('%', :description,'%')";
             $query_value[":description"] = $filters["description"];

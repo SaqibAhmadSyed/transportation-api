@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.1.1
+-- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 30, 2023 at 05:10 AM
--- Server version: 10.4.22-MariaDB
--- PHP Version: 8.1.2
+-- Generation Time: Apr 03, 2023 at 05:54 PM
+-- Server version: 10.4.27-MariaDB
+-- PHP Version: 8.1.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `transportation`
+-- Database: `transportation-api`
 --
 
 -- --------------------------------------------------------
@@ -29,19 +29,19 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `agency` (
   `agency_id` int(11) NOT NULL,
-  `agency_name` text NOT NULL,
-  `agency_url` varchar(255) NOT NULL,
-  `agency_timezone` enum('sample') NOT NULL DEFAULT 'sample',
-  `agency_lang` text DEFAULT NULL,
-  `agency_phone` varchar(255) DEFAULT NULL,
-  `agency_fare_url` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `name` text NOT NULL,
+  `url` varchar(255) NOT NULL,
+  `timezone` enum('sample') NOT NULL DEFAULT 'sample',
+  `lang` text DEFAULT NULL,
+  `phone` varchar(255) DEFAULT NULL,
+  `fare_url` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `agency`
 --
 
-INSERT INTO `agency` (`agency_id`, `agency_name`, `agency_url`, `agency_timezone`, `agency_lang`, `agency_phone`, `agency_fare_url`) VALUES
+INSERT INTO `agency` (`agency_id`, `name`, `url`, `timezone`, `lang`, `phone`, `fare_url`) VALUES
 (1, 'Société de transport de Montréal', 'http://www.stm.info,America/Montreal', 'sample', 'fr', '498-498-4844', 'http://www.stm.info/fr/infos/titres-et-tarifs');
 
 -- --------------------------------------------------------
@@ -51,13 +51,21 @@ INSERT INTO `agency` (`agency_id`, `agency_name`, `agency_url`, `agency_timezone
 --
 
 CREATE TABLE `fare` (
-  `fare_id` varchar(35) NOT NULL,
+  `fare_id` int(35) NOT NULL,
   `price decimal` decimal(10,0) DEFAULT NULL,
   `currency_type` text NOT NULL,
   `payment_method` enum('credit','debit','cash','gift card') NOT NULL DEFAULT 'debit',
   `transfers` int(11) DEFAULT NULL,
   `transfer_duration` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `fare`
+--
+
+INSERT INTO `fare` (`fare_id`, `price decimal`, `currency_type`, `payment_method`, `transfers`, `transfer_duration`) VALUES
+(1, '11', 'CAD', 'debit', NULL, 7200),
+(2, '4', 'CAD', 'debit', NULL, 7200);
 
 -- --------------------------------------------------------
 
@@ -66,10 +74,20 @@ CREATE TABLE `fare` (
 --
 
 CREATE TABLE `fare_rule` (
-  `fare_rule_id` varchar(35) NOT NULL,
-  `fare_id` varchar(35) NOT NULL,
-  `route_id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `fare_rule_id` int(11) NOT NULL,
+  `fare_id` int(11) DEFAULT NULL,
+  `route_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `fare_rule`
+--
+
+INSERT INTO `fare_rule` (`fare_rule_id`, `fare_id`, `route_id`) VALUES
+(1, 1, NULL),
+(2, 2, NULL),
+(3, 1, NULL),
+(4, 2, NULL);
 
 -- --------------------------------------------------------
 
@@ -79,12 +97,19 @@ CREATE TABLE `fare_rule` (
 
 CREATE TABLE `feed_info` (
   `feed_info_id` int(255) NOT NULL,
-  `feed_publisher_name` text NOT NULL,
-  `feed_publisher_url` text NOT NULL,
-  `feed_lang` enum('en','fr') NOT NULL DEFAULT 'en',
-  `feed_start_date` date NOT NULL DEFAULT current_timestamp(),
-  `feed_end_date` date NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `publisher_name` text NOT NULL,
+  `publisher_url` text NOT NULL,
+  `lang` enum('en','fr') NOT NULL DEFAULT 'en',
+  `start_date` date NOT NULL DEFAULT current_timestamp(),
+  `end_date` date NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `feed_info`
+--
+
+INSERT INTO `feed_info` (`feed_info_id`, `publisher_name`, `publisher_url`, `lang`, `start_date`, `end_date`) VALUES
+(1, 'Société de transport de Montréal', 'http://www.stm.info', 'fr', '2023-01-09', '2023-06-18');
 
 -- --------------------------------------------------------
 
@@ -94,27 +119,25 @@ CREATE TABLE `feed_info` (
 
 CREATE TABLE `incident` (
   `incident_id` int(11) NOT NULL,
-  `incident_date` date NOT NULL,
+  `date` date NOT NULL,
   `primary_cause` varchar(25) NOT NULL,
   `secondary_cause` varchar(25) NOT NULL,
+  `line_name` enum('Ligne orange','Ligne vert','Ligne bleu','Ligne jaune') NOT NULL,
   `symptom` varchar(25) NOT NULL,
-  `incident_time` date NOT NULL,
-  `start_time` date NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `incident_time` time NOT NULL,
+  `start_time` time NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `incident`
 --
 
-INSERT INTO `incident` (`incident_id`, `incident_date`, `primary_cause`, `secondary_cause`, `symptom`, `incident_time`, `start_time`) VALUES
-(1, '0000-00-00', 'Autres', 'Autres', 'Clientèle', '0000-00-00', '0000-00-00'),
-(2, '0000-00-00', 'Autres', 'Autres', 'Clientèle', '0000-00-00', '0000-00-00'),
-(3, '2019-01-01', 'Autres', 'Autres', 'Clientèle', '0000-00-00', '0000-00-00'),
-(4, '2019-01-01', 'Autres', 'Autres', 'Clientèle', '0000-00-00', '0000-00-00'),
-(5, '2020-01-01', 'Autres', 'Autres', 'Clientèle', '0000-00-00', '0000-00-00'),
-(6, '2020-01-01', 'Autres', 'Autres', 'Clientèle', '0000-00-00', '0000-00-00'),
-(7, '2021-01-01', 'Autres', 'Autres', 'Exploitation', '0000-00-00', '0000-00-00'),
-(8, '2021-01-01', 'Autres', 'Autres', 'Exploitation', '0000-00-00', '0000-00-00');
+INSERT INTO `incident` (`incident_id`, `date`, `primary_cause`, `secondary_cause`, `line_name`, `symptom`, `incident_time`, `start_time`) VALUES
+(1, '2019-01-01', 'Autres', 'Autres', 'Ligne orange', 'Clientèle - Ligne orange', '03:42:00', '02:56:00'),
+(2, '2019-01-01', 'Autres', 'Autres', 'Ligne vert', 'Clientèle - Ligne orange', '03:32:00', '02:56:00'),
+(3, '2019-01-01', 'Autres', 'Autres', 'Ligne jaune', 'Clientèle - Ligne verte', '04:41:00', '03:35:00'),
+(4, '2019-01-01', 'Autres', 'Autres', 'Ligne bleu', 'Clientèle - Ligne verte', '05:36:00', '04:56:00'),
+(5, '2019-01-01', 'Autres', 'Autres', 'Ligne orange', 'Clientèle - Ligne verte', '05:54:00', '05:25:00');
 
 -- --------------------------------------------------------
 
@@ -125,23 +148,25 @@ INSERT INTO `incident` (`incident_id`, `incident_date`, `primary_cause`, `second
 CREATE TABLE `route` (
   `route_id` int(11) NOT NULL,
   `agency_id` int(11) NOT NULL,
-  `route_short_name` text NOT NULL,
-  `route_long_name` text NOT NULL,
-  `route_type` enum('sample') NOT NULL DEFAULT 'sample',
-  `route_url` varchar(255) NOT NULL,
-  `route_color` enum('sample') NOT NULL DEFAULT 'sample',
-  `route_text_color` enum('sample') NOT NULL DEFAULT 'sample'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `name` text NOT NULL,
+  `type` enum('Bus','Metro') NOT NULL,
+  `url` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `route`
 --
 
-INSERT INTO `route` (`route_id`, `agency_id`, `route_short_name`, `route_long_name`, `route_type`, `route_url`, `route_color`, `route_text_color`) VALUES
-(1, 1, 'STM', 'Verte', 'sample', 'http://www.stm.info/fr/infos/reseaux/metro/verte', 'sample', 'sample'),
-(2, 1, 'STM', 'De Lorimier', 'sample', 'http://www.stm.info/fr/infos/reseaux/bus', 'sample', 'sample'),
-(4, 1, 'STM', 'Jaune', 'sample', 'http://www.stm.info/fr/infos/reseaux/metro/jaune', 'sample', 'sample'),
-(5, 1, 'STM', 'Bleue', 'sample', 'http://www.stm.info/fr/infos/reseaux/metro/bleue', 'sample', 'sample');
+INSERT INTO `route` (`route_id`, `agency_id`, `name`, `type`, `url`) VALUES
+(1, 1, 'Verte', 'Metro', 'http://www.stm.info/fr/infos/reseaux/metro/verte'),
+(2, 1, 'Orange', 'Metro', 'http://www.stm.info/fr/infos/reseaux/metro/orange'),
+(3, 1, 'Jaune', 'Metro', 'http://www.stm.info/fr/infos/reseaux/metro/jaune'),
+(4, 1, 'Bleue', 'Metro', 'http://www.stm.info/fr/infos/reseaux/metro/bleue'),
+(5, 1, 'De Lorimier', 'Bus', 'http://www.stm.info/fr/infos/reseaux/bus'),
+(6, 1, 'Parc-du-Mont-Royal / Ridgewood', 'Bus', 'http://www.stm.info/fr/infos/reseaux/bus'),
+(7, 1, 'Île-des-Soeurs', 'Bus', 'http://www.stm.info/fr/infos/reseaux/bus'),
+(8, 1, 'Christophe-Colomb', 'Bus', 'http://www.stm.info/fr/infos/reseaux/bus'),
+(9, 1, 'Atateken', 'Bus', 'http://www.stm.info/fr/infos/reseaux/bus');
 
 -- --------------------------------------------------------
 
@@ -156,7 +181,17 @@ CREATE TABLE `schedule` (
   `departure_time` time NOT NULL,
   `stop_id` int(11) NOT NULL,
   `stop_sequence` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `schedule`
+--
+
+INSERT INTO `schedule` (`schedule_id`, `trip_id`, `arrival_time`, `departure_time`, `stop_id`, `stop_sequence`) VALUES
+(5, 1, '05:13:00', '05:13:00', 1, 1),
+(6, 2, '05:14:51', '05:14:51', 2, 2),
+(7, 3, '05:16:12', '05:16:12', 3, 3),
+(8, 4, '05:17:00', '05:17:00', 4, 4);
 
 -- --------------------------------------------------------
 
@@ -173,9 +208,19 @@ CREATE TABLE `service` (
   `friday` tinyint(1) NOT NULL,
   `saturday` tinyint(1) NOT NULL,
   `sunday` tinyint(1) NOT NULL,
-  `start_date` date NOT NULL DEFAULT current_timestamp(),
+  `start_date` date NOT NULL,
   `end_date` date NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `service`
+--
+
+INSERT INTO `service` (`service_id`, `monday`, `tuesday`, `wednesday`, `thursday`, `friday`, `saturday`, `sunday`, `start_date`, `end_date`) VALUES
+(1, 1, 1, 1, 1, 0, 0, 0, '2023-01-09', '2023-03-24'),
+(2, 0, 0, 0, 0, 1, 0, 0, '2023-01-09', '2023-03-24'),
+(3, 1, 1, 1, 1, 1, 0, 0, '2023-01-09', '2023-03-24'),
+(4, 1, 1, 1, 1, 1, 0, 0, '2023-01-09', '2023-03-24');
 
 -- --------------------------------------------------------
 
@@ -188,7 +233,7 @@ CREATE TABLE `shape` (
   `shape_pt_lat` int(11) NOT NULL,
   `shape_pt_lon` int(11) NOT NULL,
   `shape_pt_sequence` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `shape`
@@ -209,27 +254,22 @@ INSERT INTO `shape` (`shape_id`, `shape_pt_lat`, `shape_pt_lon`, `shape_pt_seque
 
 CREATE TABLE `stop` (
   `stop_id` int(11) NOT NULL,
-  `stop_code` text DEFAULT NULL,
-  `stop_name` text NOT NULL,
-  `stop_lat` int(11) NOT NULL,
-  `stop_lon` int(11) NOT NULL,
-  `stop_url` varchar(255) DEFAULT NULL,
-  `location_type` enum('Ca','','','','') NOT NULL DEFAULT 'Ca',
-  `parent_station` varchar(255) NOT NULL,
-  `wheelchair_boarding` enum('yes','no') NOT NULL DEFAULT 'no'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `code` text DEFAULT NULL,
+  `name` text NOT NULL,
+  `lat` decimal(9,6) NOT NULL,
+  `lon` decimal(9,6) NOT NULL,
+  `url` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `stop`
 --
 
-INSERT INTO `stop` (`stop_id`, `stop_code`, `stop_name`, `stop_lat`, `stop_lon`, `stop_url`, `location_type`, `parent_station`, `wheelchair_boarding`) VALUES
-(1, NULL, '', 0, 0, NULL, 'Ca', '', 'no'),
-(2, '10118', 'Station Angrignon', 45, -74, 'http://www.stm.info/fr/infos/reseaux/metro/angrignon', 'Ca', 'STATION_M118', 'no'),
-(3, '[value-2]', '[value-3]', 0, 0, '[value-6]', '', '[value-8]', ''),
-(4, '10120', 'Station Monk', 45, -74, 'http://www.stm.info/fr/infos/reseaux/metro/monk', 'Ca', 'STATION_M120', 'no'),
-(5, '10122', 'Station Jolicoeur', 45, -74, 'http://www.stm.info/fr/infos/reseaux/metro/jolicoeur', 'Ca', 'STATION_M122', 'no'),
-(6, '10124', 'Station Verdun', 45, -74, 'http://www.stm.info/fr/infos/reseaux/metro/verdun', 'Ca', 'STATION_M124', 'no');
+INSERT INTO `stop` (`stop_id`, `code`, `name`, `lat`, `lon`, `url`) VALUES
+(1, '10118', 'STATION ANGRIGNON', '45.446466', '-73.603118', NULL),
+(2, '10118', 'STATION ANGRIGNON', '45.446466', '-73.603118', 'http://www.stm.info/fr/infos/reseaux/metro/angrignon'),
+(3, '10118', 'STATION ANGRIGNON', '45.446319', '-73.603835', NULL),
+(4, '10120', 'STATION MONK', '45.451158', '-73.593242', NULL);
 
 -- --------------------------------------------------------
 
@@ -241,13 +281,19 @@ CREATE TABLE `trip` (
   `trip_id` int(11) NOT NULL,
   `route_id` int(11) NOT NULL,
   `service_id` int(11) NOT NULL,
-  `shapes_id` int(11) NOT NULL,
-  `direction_id` enum('sample') DEFAULT 'sample',
-  `wheelchair_accessible` enum('sample') DEFAULT 'sample',
   `headsign` text NOT NULL,
-  `note_en` text NOT NULL,
-  `note_fr` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `shape_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `trip`
+--
+
+INSERT INTO `trip` (`trip_id`, `route_id`, `service_id`, `headsign`, `shape_id`) VALUES
+(1, 1, 1, 'STATION CÔTE-VERTU', 1),
+(2, 2, 2, 'STATION MONTMORENCY', 2),
+(3, 3, 3, 'STATION MONTMORENCY', 2),
+(4, 4, 4, 'STATION CÔTE-VERTU', 1);
 
 --
 -- Indexes for dumped tables
@@ -271,7 +317,7 @@ ALTER TABLE `fare`
 ALTER TABLE `fare_rule`
   ADD PRIMARY KEY (`fare_rule_id`),
   ADD KEY `fare_id` (`fare_id`),
-  ADD KEY `route_id` (`route_id`);
+  ADD KEY `fk_fare_route` (`route_id`);
 
 --
 -- Indexes for table `feed_info`
@@ -290,7 +336,7 @@ ALTER TABLE `incident`
 --
 ALTER TABLE `route`
   ADD PRIMARY KEY (`route_id`),
-  ADD KEY `agency_id` (`agency_id`);
+  ADD KEY `fk_route_agency` (`agency_id`);
 
 --
 -- Indexes for table `schedule`
@@ -322,7 +368,10 @@ ALTER TABLE `stop`
 -- Indexes for table `trip`
 --
 ALTER TABLE `trip`
-  ADD PRIMARY KEY (`trip_id`);
+  ADD PRIMARY KEY (`trip_id`),
+  ADD KEY `fk_trip_route` (`route_id`),
+  ADD KEY `fk_trip_service` (`service_id`),
+  ADD KEY `fk_trip_shape` (`shape_id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -335,34 +384,40 @@ ALTER TABLE `agency`
   MODIFY `agency_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- AUTO_INCREMENT for table `fare_rule`
+--
+ALTER TABLE `fare_rule`
+  MODIFY `fare_rule_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
 -- AUTO_INCREMENT for table `feed_info`
 --
 ALTER TABLE `feed_info`
-  MODIFY `feed_info_id` int(255) NOT NULL AUTO_INCREMENT;
+  MODIFY `feed_info_id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `incident`
 --
 ALTER TABLE `incident`
-  MODIFY `incident_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `incident_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `route`
 --
 ALTER TABLE `route`
-  MODIFY `route_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `route_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `schedule`
 --
 ALTER TABLE `schedule`
-  MODIFY `schedule_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `schedule_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `service`
 --
 ALTER TABLE `service`
-  MODIFY `service_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `service_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `shape`
@@ -374,13 +429,13 @@ ALTER TABLE `shape`
 -- AUTO_INCREMENT for table `stop`
 --
 ALTER TABLE `stop`
-  MODIFY `stop_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `stop_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `trip`
 --
 ALTER TABLE `trip`
-  MODIFY `trip_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `trip_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables
@@ -390,21 +445,29 @@ ALTER TABLE `trip`
 -- Constraints for table `fare_rule`
 --
 ALTER TABLE `fare_rule`
-  ADD CONSTRAINT `fare_id` FOREIGN KEY (`fare_id`) REFERENCES `fare` (`fare_id`),
-  ADD CONSTRAINT `route_id` FOREIGN KEY (`route_id`) REFERENCES `route` (`route_id`);
+  ADD CONSTRAINT `fare_rule_ibfk_1` FOREIGN KEY (`fare_id`) REFERENCES `fare` (`fare_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_fare_route` FOREIGN KEY (`route_id`) REFERENCES `route` (`route_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `route`
 --
 ALTER TABLE `route`
-  ADD CONSTRAINT `agency_id` FOREIGN KEY (`agency_id`) REFERENCES `agency` (`agency_id`);
+  ADD CONSTRAINT `agency_id` FOREIGN KEY (`agency_id`) REFERENCES `agency` (`agency_id`),
+  ADD CONSTRAINT `fk_route_agency` FOREIGN KEY (`agency_id`) REFERENCES `agency` (`agency_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `schedule`
 --
 ALTER TABLE `schedule`
-  ADD CONSTRAINT `stop_id` FOREIGN KEY (`stop_id`) REFERENCES `stop` (`stop_id`),
-  ADD CONSTRAINT `trip_id` FOREIGN KEY (`trip_id`) REFERENCES `trip` (`trip_id`);
+  ADD CONSTRAINT `fk_schedule_trip` FOREIGN KEY (`trip_id`) REFERENCES `trip` (`trip_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `trip`
+--
+ALTER TABLE `trip`
+  ADD CONSTRAINT `fk_trip_route` FOREIGN KEY (`route_id`) REFERENCES `route` (`route_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_trip_service` FOREIGN KEY (`service_id`) REFERENCES `service` (`service_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_trip_shape` FOREIGN KEY (`shape_id`) REFERENCES `shape` (`shape_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
