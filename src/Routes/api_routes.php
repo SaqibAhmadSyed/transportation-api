@@ -2,6 +2,7 @@
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
+use Vanier\Api\Controllers\IncidentsController;
 use Vanier\Api\Controllers\TripsController;
 use Vanier\Api\Controllers\RoutesController;
 use Vanier\Api\Controllers\StopsController;
@@ -38,3 +39,6 @@ $app->get('/schedules/{schedule_id}', [SchedulesController::class , 'getSchedule
 //ROUTE: /routes
 $app->get('/routes', [RoutesController::class, 'getAllRoutes']);
 $app->get('/routes/{route_id}', [RoutesController::class, 'getRouteById']);
+
+//Routing For IncidentController 
+$app->get('/incidents', [IncidentsController::class, 'getAll']);
