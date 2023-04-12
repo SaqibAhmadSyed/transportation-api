@@ -7,6 +7,8 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Vanier\Api\Helpers\Input;
 use Vanier\Api\Models\RoutesModel;
 use Slim\Exception\HttpBadRequestException;
+use Fig\Http\Message\StatusCodeInterface;
+use Slim\Exception\HttpNotFoundException;
 
 class RoutesController extends BaseController
 {
@@ -17,6 +19,70 @@ class RoutesController extends BaseController
         $this->validation = new Input();
     }
 
+    public function handleDeleteRoutes(Request $request, Response $response)
+    {
+        $routes_data = $request->getParsedBody();
+
+        foreach ($routes_data as $data) {
+            //checks if the film exists
+            if (!$this->route_model->getRouteById($data)) {
+                throw new HttpNotFoundException($request, "Id was not found...NOT FOUND!");
+            }
+            //deletes the data with the given data in the body and the id of the data we want to delete
+            $this->route_model->deleteRoute($data);
+        }
+        $success_data = [
+            "code" => StatusCodeInterface::STATUS_NO_CONTENT,
+            "message" => "Deleted", 
+            "description" => "The route was updated successfully!"
+        ];
+
+        return $this->prepareOkResponse($response, $success_data);
+    }
+
+    public function handleUpdateRoutes(Request $request, Response $response)
+    {
+        $routes_data = $request->getParsedBody();
+
+        foreach ($routes_data as $data) {
+            //validates the input
+            $this->isValidRoute($request, $data);
+            //gets the film id from the body
+            $route_id = $data["route_id"];
+            //unsets the film id in the whole data since the table is auto incrementing it
+            unset($data["route_id"]);
+            //updates the data with the given data in the body and the id of the data we want to update
+            $this->route_model->updateRoute($data, ["route_id" => $route_id]);
+        }
+
+        $success_data = [
+            "code" => StatusCodeInterface::STATUS_OK,
+            "message" => "Updated", 
+            "description" => "The route was updated successfully!"
+        ];
+
+        return $this->prepareOkResponse($response, $success_data);
+    }
+
+
+    public function handleCreateRoutes(Request $request, Response $response) {     
+        //step 1-- retrieve the data from the request body (getParseBodyMethod)
+        $data = $request->getParsedBody();
+
+        foreach ($data as $route){
+            $this->isValidRoute($request, $route);
+            $this->route_model->createRoute($route);
+        }
+
+        $success_data = [
+            "code" => StatusCodeInterface::STATUS_CREATED,
+            "message" => "Created", 
+            "description" => "The route was created successfully!"
+        ];
+
+        return $this->prepareOkResponse($response, $success_data, 201);
+    }
+
     public function getRoutebyId(Request $request, Response $response, array $uri_args){
         $route_id = $uri_args["route_id"];
         $data = $this->route_model->getRouteById($route_id);
@@ -25,47 +91,41 @@ class RoutesController extends BaseController
 
     public function getAllRoutes(Request $request, Response $response){
         $filters = $request->getQueryParams();
-        $route_model = new RoutesModel();
-        $filter_params = [];
-        $type_array = ['Bus', 'Metro'];
 
-        if (!$this->validation->isIntOrGreaterThan($filters["page"], 0) || !$this->validation->isIntOrGreaterThan($filters["page_size"], 0)) {
-            throw new HttpBadRequestException($request, "Invalid pagination input!");
+        if ($this->isValidPageParams($filters)) {
+            //sets up the pagination options by getting the value in the query params
+            // WE set only if we have valid ....
+            $this->route_model->setPaginationOptions($filters["page"], $filters["page_size"]);
         }
 
-        // stores in filter_params all the filters that are not pagination filters for validation
-        // Filters the value inside the foreach loops
-        foreach ($filters as $key => $value) {
-            if ($key !== 'page' && $key !== 'page_size') {
-                if (!$this->validation->isAlpha($value)) {
-                    throw new HttpBadRequestException($request, "Only string are accepted!");
-                }
-                if ($key === 'type' && !$this->validation->isInArray($value, $type_array)) {
-                    throw new HttpBadRequestException($request, "Only specific types (Bus or Metro) are accepted");
-                }
-            }
-        }
-       
-        $route_model->setPaginationOptions($filters['page'], $filters['page_size']);
-        $data = $route_model->getAll($filter_params); 
-        $this->validateRoute($request, $data);
+        $data = $this->route_model->getAll($filters); 
         return $this->prepareOkResponse($response, $data);
     }
 
-        
-    
-
-    public function validateRoute($request, array $route)
+    public function isValidRoute($request, array $route)
     {
         $type_array = ['Bus', 'Metro'];
+
+        $required_keys = ["agency_id", "name", "type", "url"];
+        foreach ($required_keys as $key) {
+            if (!array_key_exists($key, $route)) {
+                throw new HttpBadRequestException($request, "Missing required key '$key'...BAD REQUEST!");
+            }
+        }
 
         //gets all the row in films
         foreach ($route as $key => $value) {
             switch ($key) {
                     // each case is a key that we want to validate
                 case "route_id":
+                    // auto increment. therefore, no need to set id
+                    if (isset($value)) {
+                        throw new HttpBadRequestException($request, "Value not required...BAD REQUEST!");
+                    }
+                    break;
+                case "agency_id":
                     // check if the id is not a string
-                    if ($this->validation->isAlpha($value)) {
+                    if ($value != 1) {
                         throw new HttpBadRequestException($request, "One or more data is malformed...BAD REQUEST!");
                     }
                     break;
@@ -81,6 +141,14 @@ class RoutesController extends BaseController
                 case "type":
                     if (!$this->validation->isInArray($value, $type_array)) {
                         throw new HttpBadRequestException($request, "One or more data is malformed...BAD REQUEST!");
+                    }
+                    if (empty($value)) {
+                        throw new HttpBadRequestException($request, "One or more data is empty...BAD REQUEST!");
+                    }
+                    break;
+                case "url":
+                    if (!$this->validation->isStmUrl($value)) {
+                        throw new HttpNotFoundException($request, "This link is not available in the stm website...NOT FOUND");
                     }
                     if (empty($value)) {
                         throw new HttpBadRequestException($request, "One or more data is empty...BAD REQUEST!");

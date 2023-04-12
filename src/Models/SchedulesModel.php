@@ -10,6 +10,11 @@ class SchedulesModel extends BaseModel{
         parent::__construct();
     }
 
+    public function createSchedule(array $schedule_data)
+    {
+        return $this->insert($this->table_name, $schedule_data);
+    }
+
     public function getScheduleById(int $schedule_id){
         $sql = "SELECT * FROM $this->table_name WHERE schedule_id = :schedule_id";
         return $this->run($sql, [":schedule_id"=> $schedule_id])->fetchAll();

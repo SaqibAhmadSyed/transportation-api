@@ -32,11 +32,16 @@ class Input
      */
     public static function isOnlyAlpha($value)
     {
-        $value = preg_replace('/^[a-zA-Z\s]+$/', '', $value); // remove non-letter characters
-        if (ctype_alpha($value)) {
-            return true;
+        $pattern = '/^[a-zA-Z\s]+$/'; // regular expression to match letters and whitespace
+        $words = explode(' ', $value); // split the sentence into words
+    
+        foreach ($words as $word) {
+            if (!preg_match($pattern, $word)) {
+                return false; // if any word contains non-letter characters, return false
+            }
         }
-        return false;
+    
+        return true; // all words contain only letters
     }
 
     /** checks if the given value is an round number
@@ -119,15 +124,29 @@ class Input
         return DateTime::createFromFormat('Y-m-d H:i:s', $value);
     }
 
+    public static function isFormattedTime($value)
+    {
+        $time = DateTime::createFromFormat('H:i:s', $value);
+        return $time && $time->format('H:i:s') === $value;
+    }
+    
+
+    function isStmUrl($value)
+    {
+        $url = "http://www.stm.info/fr/infos/reseaux/";
+        return strpos($value, $url) !== false;
+    }
+    
+
     public static function isEmail($value, string $first_name, string $last_name)
     {
         $v = new Input();
-        
+
         if (!$v->isAlpha($first_name)) {
-            return false;    
+            return false;
         }
         if (!$v->isAlpha($last_name)) {
-            return false;    
+            return false;
         }
 
         $email_name = $first_name . '.' . $last_name . '@sakilacustomer.org';
