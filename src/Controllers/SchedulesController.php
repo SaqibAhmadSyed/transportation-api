@@ -22,22 +22,73 @@ class SchedulesController extends BaseController
         $this->validation = new Input();
     }
 
+    public function handleDeleteSchedules(Request $request, Response $response)
+    {
+        $schedules_data = $request->getParsedBody();
+
+        foreach ($schedules_data as $data) {
+            //checks if the film exists
+            if (!$this->schedule_model->getScheduleById($data)) {
+                throw new HttpNotFoundException($request, "Id was not found...NOT FOUND!");
+            }
+            //deletes the data with the given data in the body and the id of the data we want to delete
+            $this->schedule_model->deleteSchedule($data);
+        }
+        $success_data = [
+            "code" => StatusCodeInterface::STATUS_NO_CONTENT,
+            "message" => "Deleted", 
+            "description" => "The route was deleted successfully!"
+        ];
+
+        return $this->prepareOkResponse($response, $success_data);
+    }
+
+    public function handleUpdateSchedules(Request $request, Response $response)
+    {
+        $schedule_data = $request->getParsedBody();
+
+        foreach ($schedule_data as $data) {
+            //validates the input
+            $this->isValidSchedule($request, $data);
+            //gets the film id from the body
+            $schedule_id = $data["schedule_id"];
+            if($this->schedule_model->getSchedulebyId($schedule_id)){
+                unset($data["schedule_id"]);
+                $this->schedule_model->updateSchedule($data, ["schedule_id" => $schedule_id]);
+            } else {
+                throw new HttpNotFoundException($request, "Id was not found...NOT FOUND!");
+            }
+        }
+
+        $success_data = [
+            "code" => StatusCodeInterface::STATUS_OK,
+            "message" => "Updated", 
+            "description" => "The route was updated successfully!"
+        ];
+        return $this->prepareOkResponse($response, $success_data);
+    }
+
     public function handleCreateSchedules(Request $request, Response $response) {     
         //step 1-- retrieve the data from the request body (getParseBodyMethod)
         $data = $request->getParsedBody();
 
-        foreach ($data as $schedule){
-            $this->isValidSchedule($request, $schedule);
-            $this->schedule_model->createSchedule($schedule);
+        foreach ($data as $schedule) {
+            if (empty($schedule['schedule_id'])) {
+                $this->isValidSchedule($request, $schedule);
+                $this->schedule_model->createSchedule($schedule);
+            } else {
+                throw new HttpBadRequestException($request, "Value not required...BAD REQUEST!");
+            }
         }
-
+        
         $success_data = [
             "code" => StatusCodeInterface::STATUS_CREATED,
             "message" => "Created", 
             "description" => "The schedule was created successfully!"
         ];
-
+        
         return $this->prepareOkResponse($response, $success_data, 201);
+        
     }
 
     public function getScheduleById(Request $request, Response $response, array $uri_args)
@@ -78,10 +129,6 @@ class SchedulesController extends BaseController
             }
             switch ($key) {
                     // each case is a key that we want to validate
-                case "schedule_id":
-                    if (isset($value)) {
-                        throw new HttpBadRequestException($request, "Value not required...BAD REQUEST!");
-                    }
                 case "stop_id":
                 case "trip_id":
                     // check if the id is not a string

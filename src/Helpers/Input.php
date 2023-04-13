@@ -153,6 +153,14 @@ class Input
         return filter_var($value, FILTER_VALIDATE_EMAIL) === $email_name;
     }
 
+    public function isValidString($value)
+    {
+        if(!is_string($value)) {
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Checks whether a value is int and is within a range.
      * @param mixed $value

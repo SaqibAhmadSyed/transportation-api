@@ -19,22 +19,21 @@ class RoutesController extends BaseController
         $this->validation = new Input();
     }
 
-    public function handleDeleteRoutes(Request $request, Response $response)
+    public function handleDeleteRoutes(Request $request, Response $response, array $uri_args)
     {
-        $routes_data = $request->getParsedBody();
+        $route_id = $uri_args["route_id"];
 
-        foreach ($routes_data as $data) {
-            //checks if the film exists
-            if (!$this->route_model->getRouteById($data)) {
-                throw new HttpNotFoundException($request, "Id was not found...NOT FOUND!");
-            }
-            //deletes the data with the given data in the body and the id of the data we want to delete
-            $this->route_model->deleteRoute($data);
+        //checks if the film exists
+        if (!$this->route_model->getRouteById($route_id)) {
+            throw new HttpNotFoundException($request, "Id was not found...NOT FOUND!");
         }
+        //deletes the data with the given data in the body and the id of the data we want to delete
+        $this->route_model->deleteRoute($route_id);
+        
         $success_data = [
             "code" => StatusCodeInterface::STATUS_NO_CONTENT,
             "message" => "Deleted", 
-            "description" => "The route was updated successfully!"
+            "description" => "The route was deleted successfully!"
         ];
 
         return $this->prepareOkResponse($response, $success_data);
@@ -49,10 +48,12 @@ class RoutesController extends BaseController
             $this->isValidRoute($request, $data);
             //gets the film id from the body
             $route_id = $data["route_id"];
-            //unsets the film id in the whole data since the table is auto incrementing it
-            unset($data["route_id"]);
-            //updates the data with the given data in the body and the id of the data we want to update
-            $this->route_model->updateRoute($data, ["route_id" => $route_id]);
+            if($this->route_model->getRoutebyId($route_id)){
+                unset($data["route_id"]);
+                $this->route_model->updateRoute($data, ["route_id" => $route_id]);
+            } else {
+                throw new HttpNotFoundException($request, "Id was not found...NOT FOUND!");
+            }
         }
 
         $success_data = [
@@ -60,7 +61,6 @@ class RoutesController extends BaseController
             "message" => "Updated", 
             "description" => "The route was updated successfully!"
         ];
-
         return $this->prepareOkResponse($response, $success_data);
     }
 
@@ -70,8 +70,13 @@ class RoutesController extends BaseController
         $data = $request->getParsedBody();
 
         foreach ($data as $route){
-            $this->isValidRoute($request, $route);
-            $this->route_model->createRoute($route);
+            if(empty($route["route_id"])){
+                $this->isValidRoute($request, $route);
+                $this->route_model->createRoute($route);
+            } else {
+                throw new HttpBadRequestException($request, "Value not required...BAD REQUEST!"); 
+            }
+            
         }
 
         $success_data = [
@@ -117,12 +122,6 @@ class RoutesController extends BaseController
         foreach ($route as $key => $value) {
             switch ($key) {
                     // each case is a key that we want to validate
-                case "route_id":
-                    // auto increment. therefore, no need to set id
-                    if (isset($value)) {
-                        throw new HttpBadRequestException($request, "Value not required...BAD REQUEST!");
-                    }
-                    break;
                 case "agency_id":
                     // check if the id is not a string
                     if ($value != 1) {
@@ -131,11 +130,11 @@ class RoutesController extends BaseController
                     break;
                 case "name":
                     // check if the title is only strings
-                    if (!$this->validation->isOnlyAlpha($value)) {
+                    if (!$this->validation->isValidString($value)){
                         throw new HttpBadRequestException($request, "One or more data is malformed...BAD REQUEST!");
                     }
                     if (empty($value)) {
-                        throw new HttpBadRequestException($request, "One or more data is empty...BAD REQUEST!");
+                        throw new HttpBadRequestException($request, "One or more data is malformed...BAD REQUEST!");
                     }
                     break;
                 case "type":
@@ -143,7 +142,7 @@ class RoutesController extends BaseController
                         throw new HttpBadRequestException($request, "One or more data is malformed...BAD REQUEST!");
                     }
                     if (empty($value)) {
-                        throw new HttpBadRequestException($request, "One or more data is empty...BAD REQUEST!");
+                        throw new HttpBadRequestException($request, "One or more data is malformed...BAD REQUEST!");
                     }
                     break;
                 case "url":
@@ -151,7 +150,7 @@ class RoutesController extends BaseController
                         throw new HttpNotFoundException($request, "This link is not available in the stm website...NOT FOUND");
                     }
                     if (empty($value)) {
-                        throw new HttpBadRequestException($request, "One or more data is empty...BAD REQUEST!");
+                        throw new HttpBadRequestException($request, "One or more data is malformed...BAD REQUEST!");
                     }
                     break;
                 default:

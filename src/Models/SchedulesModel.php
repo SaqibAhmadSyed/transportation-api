@@ -10,6 +10,16 @@ class SchedulesModel extends BaseModel{
         parent::__construct();
     }
 
+    public function updateSchedule(array $schedule_data, array $schedule_id)
+    {
+        $this->update($this->table_name, $schedule_data, $schedule_id);
+    }
+
+    public function deleteSchedule($schedule_id)
+    {
+        $this->delete($this->table_name, ["schedule_id" =>$schedule_id]);
+    }
+
     public function createSchedule(array $schedule_data)
     {
         return $this->insert($this->table_name, $schedule_data);

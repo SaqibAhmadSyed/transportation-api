@@ -35,10 +35,12 @@ $app->get('/stops/{stop_id}', [StopsController::class, 'getStopInfo']);
 $app->get('/schedules', [SchedulesController::class, 'getAllSchedules']);
 $app->get('/schedules/{schedule_id}', [SchedulesController::class , 'getScheduleById']);
 $app->post('/schedules', [SchedulesController::class, 'handleCreateSchedules']);
+$app->put('/schedules', [SchedulesController::class, 'handleUpdateSchedules']);
+$app->delete('/schedules/{schedule_id}', [SchedulesController::class, 'handleDeleteSchedules']);
 
 //ROUTE: /routes
 $app->get('/routes', [RoutesController::class, 'getAllRoutes']);
 $app->get('/routes/{route_id}', [RoutesController::class, 'getRouteById']);
 $app->post('/routes', [RoutesController::class, 'handleCreateRoutes']);
 $app->put('/routes', [RoutesController::class, 'handleUpdateRoutes']);
-$app->delete('/routes', [RoutesController::class, 'handleDeleteRoutes']);
+$app->delete('/routes/{route_id}', [RoutesController::class, 'handleDeleteRoutes']);
