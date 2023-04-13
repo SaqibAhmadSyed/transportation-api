@@ -6,12 +6,18 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Vanier\Api\Models\StopsModel;
 use Vanier\Api\Controllers\BaseController;
+use Vanier\Api\Helpers\Input;
+use Slim\Exception\HttpBadRequestException;
+use Fig\Http\Message\StatusCodeInterface;
+use Slim\Exception\HttpNotFoundException;
 
 class StopsController extends BaseController
 {
-    private $stop_model = null;
+    private $stop_model;
+    private $validation;
     public function __construct(){
         $this->stop_model = new StopsModel();
+        $this->validation = new Input();
     }
     
     //ROUTE: //stops(stop_id)
@@ -23,7 +29,9 @@ class StopsController extends BaseController
 
     public function getAllStops(Request $request, Response $response){
         $filters = $request->getQueryParams();
-        //$this->stop_model->setPaginationOptions($filters['page'], $filters['page_size']);
+        if($this->isValidPageParams($filters)){
+            $this->stop_model->setPaginationOptions($filters["page"], $filters["page_size"]);
+        }
         $data = $this->stop_model->getAll($filters);
         return $this->prepareOkResponse($response, $data);
     }

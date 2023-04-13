@@ -15,8 +15,28 @@ class TripsModel extends BaseModel{
     }
 
     public function getAll($filters){
-        $filters = [];
-        $sql = "SELECT * FROM $this->table_name";
+        $query_value = [];
+        $sql = "SELECT * FROM $this->table_name WHERE 1";
+        if (isset($filters["name"])) {
+            $sql .= " AND name LIKE CONCAT('%', :name,'%')";
+            $query_value[":name"] = $filters["name"];
+        }
+        if (isset($filters["type"])) {
+            $sql .= " AND type LIKE CONCAT('%', :type,'%')";
+            $query_value[":type"] = $filters["type"];
+        }
         return $this->paginate($sql, $filters);
+    }
+
+    public function createTrip(array $trip_data){
+        return $this->insert($this->table_name, $trip_data);
+    } 
+
+    public function updateTrip(array $trip_data, array $trip_id){
+        return $this->update($this->table_name, $trip_data, $trip_id);
+    }
+    
+    public function deleteTrip($trip_id){
+        $this->delete($this->table_name, ["trip_id" =>$trip_id]);
     }
 }
