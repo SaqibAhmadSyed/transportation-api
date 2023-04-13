@@ -25,7 +25,10 @@ $app->get('/hello', function (Request $request, Response $response, $args) {
 
 //ROUTE: /trips
 $app->get('/trips', [TripsController::class, 'getAllTrips']);
-$app->get('/trips/{trip_id}', [TripsController::class , 'getTripInfo']);
+$app->get('/trips/{trip_id}', [TripsController::class , 'getTripById']);
+$app->post('/trips', [TripsController::class, 'handleCreateTrips']);
+$app->put('/trips', [TripsController::class, 'handleUpdateTrips']);
+$app->delete('/trips', [TripsController::class, 'handleDeleteTrips']);
 
 //ROUTE: /stops
 $app->get('/stops', [StopsController::class, 'getAllStops']);
