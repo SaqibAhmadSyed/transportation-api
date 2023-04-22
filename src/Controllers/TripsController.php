@@ -10,7 +10,6 @@ use Slim\Exception\HttpBadRequestException;
 use Fig\Http\Message\StatusCodeInterface;
 use Slim\Exception\HttpNotFoundException;
 
-
 class TripsController extends BaseController
 {
     private $trip_model;
@@ -89,10 +88,15 @@ class TripsController extends BaseController
     }
 
     public function handleCreateTrips(Request $request, Response $response){
-        $trip_data = $request->getParsedBody();
-        foreach($trip_data as $data){
-            $this->isValidTrip($request, $data);
-            $this->trip_model->createTrip($data);
+        $data = $request->getParsedBody();
+        foreach($data as $trip){
+            if(empty($trip["trip_id"])){
+                $this->isValidTrip($request, $data);
+                $this->trip_model->createTrip($data);
+            }else{
+                throw new HttpBadRequestException($request, "Value not required....BAD REQUEST!");
+            }
+            
         }
         $success_data = [
             "code" => StatusCodeInterface::STATUS_CREATED,
@@ -108,8 +112,12 @@ class TripsController extends BaseController
         foreach($trips_data as $data){
             $this->isValidTrip($request, $data);
             $trip_id = $data["trip_id"];
-            unset($data["trip_id"]);
-            $this->trip_model->updateTrip($data, ["trip_id" => $trip_id]);
+            if($this->trip_model->getTripById($trip_id)){
+                unset($data["trip_id"]);
+                $this->trip_model->updateTrip($data, ["trip_id" => $trip_id]);
+            }else{
+                throw new HttpNotFoundException($request, "Id was not found....NOT FOUND!");
+            }
         }
         $success_data = [
             "code" => StatusCodeInterface::STATUS_OK,
@@ -119,14 +127,13 @@ class TripsController extends BaseController
         return $this->prepareOkResponse($response, $success_data);
     }
 
-    public function handleDeleteTrips(Request $request, Response $response){
-        $trips_data = $request->getParsedBody();
-        foreach($trips_data as $data){
-            if(!$this->trip_model->getTripById($data)){
-                throw new HttpNotFoundException($request, "ID was not found");
-            }
-            $this->trip_model->deleteTrip($data);
+    public function handleDeleteTrips(Request $request, Response $response, array $uri_args){
+        $trip_id = $uri_args["trip_id"];
+        if(!$this->trip_model->getTripById($trip_id)){
+            throw new HttpNotFoundException($request, "ID was not found");
         }
+        $this->trip_model->deleteTrip($trip_id);
+        
         $success_data = [
             "code" => StatusCodeInterface::STATUS_NO_CONTENT,
             "message" => "Deleted",

@@ -32,7 +32,10 @@ $app->delete('/trips', [TripsController::class, 'handleDeleteTrips']);
 
 //ROUTE: /stops
 $app->get('/stops', [StopsController::class, 'getAllStops']);
-$app->get('/stops/{stop_id}', [StopsController::class, 'getStopInfo']);
+$app->get('/stops/{stop_id}', [StopsController::class, 'getStopById']);
+$app->post('/stops', [StopsController::class, 'handleCreateStops']);
+$app->put('/stops', [StopsController::class, 'handleUpdateStops']);
+$app->delete('/stops', [StopsController::class, 'handleDeleteStops']);
 
 //ROUTE: /schedules
 $app->get('/schedules', [SchedulesController::class, 'getAllSchedules']);
