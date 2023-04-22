@@ -2,6 +2,7 @@
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
+use Vanier\Api\Controllers\IncidentsController;
 use Vanier\Api\Controllers\TripsController;
 use Vanier\Api\Controllers\RoutesController;
 use Vanier\Api\Controllers\StopsController;
@@ -50,3 +51,7 @@ $app->get('/routes/{route_id}', [RoutesController::class, 'getRouteById']);
 $app->post('/routes', [RoutesController::class, 'handleCreateRoutes']);
 $app->put('/routes', [RoutesController::class, 'handleUpdateRoutes']);
 $app->delete('/routes/{route_id}', [RoutesController::class, 'handleDeleteRoutes']);
+
+//ROUTE: /incidents
+$app->get('/incidents', [IncidentsController::class, 'getAllIncidents']);
+$app->get('/incidents/{incidents_id}', [IncidentsController::class, 'getIncidentById']);
