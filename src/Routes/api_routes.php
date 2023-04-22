@@ -54,7 +54,7 @@ $app->delete('/routes/{route_id}', [RoutesController::class, 'handleDeleteRoutes
 
 //ROUTE: /incidents
 $app->get('/incidents', [IncidentsController::class, 'getAllIncidents']);
-$app->get('/incidents/{incidents_id}', [IncidentsController::class, 'getIncidentById']);
+$app->get('/incidents/{incident_id}', [IncidentsController::class, 'getIncidentById']);
 $app->post('/incidents', [IncidentsController::class, 'handleCreateIncidents']);
 $app->put('/incidents', [IncidentsController::class, 'handleUpdateIncidents']);
-$app->delete('/incidents/{route_id}', [RoutesCIncidentsControllerontroller::class, 'handleDeleteIncidents']);
+$app->delete('/incidents/{incident_id}', [RoutesCIncidentsControllerontroller::class, 'handleDeleteIncidents']);
