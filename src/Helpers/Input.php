@@ -119,17 +119,27 @@ class Input
      * 
      * @return [type]
      */
-    public static function isFormattedDate($value)
+    public static function isFormattedDateAndHour($value)
     {
         return DateTime::createFromFormat('Y-m-d H:i:s', $value);
     }
 
-    public static function isFormattedTime($value)
+    public static function isFormatedTime($value)
     {
         $time = DateTime::createFromFormat('H:i:s', $value);
         return $time && $time->format('H:i:s') === $value;
     }
     
+    /**
+     * Checks if a date follows the established standard for the sake of consistency
+     * @param mixed $value
+     * 
+     * @return [type]
+     */
+    public static function isFormatedDate($value)
+    {
+        return DateTime::createFromFormat('Y-m-d', $value);
+    }
 
     function isStmUrl($value)
     {

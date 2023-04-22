@@ -36,7 +36,7 @@ $app->get('/stops', [StopsController::class, 'getAllStops']);
 $app->get('/stops/{stop_id}', [StopsController::class, 'getStopById']);
 $app->post('/stops', [StopsController::class, 'handleCreateStops']);
 $app->put('/stops', [StopsController::class, 'handleUpdateStops']);
-$app->delete('/stops', [StopsController::class, 'handleDeleteStops']);
+$app->delete('/stops/{stop_id}', [StopsController::class, 'handleDeleteStops']);
 
 //ROUTE: /schedules
 $app->get('/schedules', [SchedulesController::class, 'getAllSchedules']);
@@ -55,3 +55,6 @@ $app->delete('/routes/{route_id}', [RoutesController::class, 'handleDeleteRoutes
 //ROUTE: /incidents
 $app->get('/incidents', [IncidentsController::class, 'getAllIncidents']);
 $app->get('/incidents/{incidents_id}', [IncidentsController::class, 'getIncidentById']);
+$app->post('/incidents', [IncidentsController::class, 'handleCreateIncidents']);
+$app->put('/incidents', [IncidentsController::class, 'handleUpdateIncidents']);
+$app->delete('/incidents/{route_id}', [RoutesCIncidentsControllerontroller::class, 'handleDeleteIncidents']);

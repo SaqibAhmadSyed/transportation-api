@@ -5,7 +5,7 @@ use Vanier\Api\Models\BaseModel;
 
 class IncidentsModel extends BaseModel{
     private $table_name = "incident";
-    public function __construct(){
+    public function construct(){
         parent::__construct();
     }
 

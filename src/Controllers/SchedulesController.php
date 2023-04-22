@@ -144,7 +144,7 @@ class SchedulesController extends BaseController
                 case "arrival_time":
                 case "departure_time":
                     // check if the id is not a string
-                    if (!$this->validation->isFormattedTime($value)) {
+                    if (!$this->validation->isFormatedTime($value)) {
                         throw new HttpBadRequestException($request, "One or more data is malformed...BAD REQUEST!");
                     }
                     break;
