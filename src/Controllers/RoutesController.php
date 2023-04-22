@@ -130,7 +130,7 @@ class RoutesController extends BaseController
                     break;
                 case "name":
                     // check if the title is only strings
-                    if (!$this->validation->isValidString($value)){
+                    if (!$this->validation->isOnlyAlpha($value)){
                         throw new HttpBadRequestException($request, "One or more data is malformed...BAD REQUEST!");
                     }
                     if (empty($value)) {

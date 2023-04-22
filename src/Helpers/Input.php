@@ -32,7 +32,7 @@ class Input
      */
     public static function isOnlyAlpha($value)
     {
-        $pattern = '/^[a-zA-Z\s]+$/'; // regular expression to match letters and whitespace
+        $pattern = '/^[\p{L}\s\-]+$/u';// regular expression to match letters, whitespace, and hyphens
         $words = explode(' ', $value); // split the sentence into words
     
         foreach ($words as $word) {
@@ -41,7 +41,7 @@ class Input
             }
         }
     
-        return true; // all words contain only letters
+        return true; // all words contain only letters, whitespace, and hyphens
     }
 
     /** checks if the given value is an round number
