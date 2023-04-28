@@ -58,5 +58,13 @@ class BaseController
         $validator->mapFieldsRules($rules);
         return $validator->validate();      
     }
+
+    
+    protected function prepareResponse(Response $response, $in_payload, $status_code) {
+        $payload = json_encode($in_payload);
+        $response->getBody()->write($payload);
+        return $response->withHeader('Content-Type', APP_MEDIA_TYPE_JSON)
+                        ->withStatus($status_code);
+    }
 }
 

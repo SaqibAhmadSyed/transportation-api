@@ -2,6 +2,7 @@
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
+use Vanier\Api\Controllers\AuthenticationController;
 use Vanier\Api\Controllers\IncidentsController;
 use Vanier\Api\Controllers\TripsController;
 use Vanier\Api\Controllers\RoutesController;
@@ -58,3 +59,7 @@ $app->get('/incidents/{incident_id}', [IncidentsController::class, 'getIncidentB
 $app->post('/incidents', [IncidentsController::class, 'handleCreateIncidents']);
 $app->put('/incidents', [IncidentsController::class, 'handleUpdateIncidents']);
 $app->delete('/incidents/{incident_id}', [RoutesCIncidentsControllerontroller::class, 'handleDeleteIncidents']);
+
+//ROUTE: /authentication stuff
+$app->post('/account', [AuthenticationController::class, 'handleCreateUserAccount']);
+$app->post('/token', [AuthenticationController::class, 'handleGetToken']);
