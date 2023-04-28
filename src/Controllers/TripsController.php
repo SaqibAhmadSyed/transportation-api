@@ -22,7 +22,8 @@ class TripsController extends BaseController
         $this->trip_model = new TripsModel();
         $this->validation = new Input();
     }
-    public function handleCreateTrips(Request $request, Response $response) {     
+    public function handleCreateTrips(Request $request, Response $response)
+    {
         //step 1-- retrieve the data from the request body (getParseBodyMethod)
         $data = $request->getParsedBody();
 
@@ -34,15 +35,13 @@ class TripsController extends BaseController
                 throw new HttpBadRequestException($request, "Value not required...BAD REQUEST!");
             }
         }
-        
+
         $success_data = [
             "code" => StatusCodeInterface::STATUS_CREATED,
-            "message" => "Created", 
+            "message" => "Created",
             "description" => "The trip was created successfully!"
         ];
-        
         return $this->prepareOkResponse($response, $success_data, 201);
-        
     }
 
     public function handleUpdateTrips(Request $request, Response $response)
@@ -105,21 +104,21 @@ class TripsController extends BaseController
         $stop_model = new StopsModel();
         $route_model = new RoutesModel();
         $shape_model = new ShapesModel();
-    
+
         if (!isset($trip) || !is_array($trip)) {
             throw new HttpBadRequestException($request, "Invalid/malformed data...BAD REQUEST!");
         }
-    
+
         $required_keys = ["route_id", "service_id", "headsign", "shape_id"];
         foreach ($required_keys as $key) {
             if (!array_key_exists($key, $trip)) {
                 throw new HttpBadRequestException($request, "Missing required key '$key'...BAD REQUEST!");
             }
         }
-    
+
         foreach ($trip as $key => $value) {
             switch ($key) {
-                // each case is a key that we want to validate
+                    // each case is a key that we want to validate
                 case "route_id":
                 case "stop_id":
                 case "shape_id":
@@ -146,5 +145,4 @@ class TripsController extends BaseController
             }
         }
     }
-    
 }
