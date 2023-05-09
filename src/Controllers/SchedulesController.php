@@ -107,6 +107,9 @@ class SchedulesController extends BaseController
             $this->schedule_model->setPaginationOptions($filters["page"], $filters["page_size"]);
         }
         $data = $this->schedule_model->getAll($filters);
+        $api_controller = new AveloAPIController();
+        $api_data = $api_controller->getBikes();
+        $data["avelo_api"] = $api_data;
         return $this->prepareOkResponse($response, $data);
     }
 

@@ -104,6 +104,9 @@ class RoutesController extends BaseController
         }
 
         $data = $this->route_model->getAll($filters); 
+        $api_controller = new BixiAPIController();
+        $api_data = $api_controller->getBikes();
+        $data["bixi_api"] = $api_data;
         return $this->prepareOkResponse($response, $data);
     }
 
