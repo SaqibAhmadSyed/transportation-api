@@ -141,28 +141,23 @@ class Input
         return DateTime::createFromFormat('Y-m-d', $value);
     }
 
+    /**
+     * checks if the url exists within the stm website
+     * @param mixed $value input
+     * @return bool
+     */
     function isStmUrl($value)
     {
         $url = "http://www.stm.info/fr/infos/reseaux/";
         return strpos($value, $url) !== false;
     }
+
     
-
-    public static function isEmail($value, string $first_name, string $last_name)
-    {
-        $v = new Input();
-
-        if (!$v->isAlpha($first_name)) {
-            return false;
-        }
-        if (!$v->isAlpha($last_name)) {
-            return false;
-        }
-
-        $email_name = $first_name . '.' . $last_name . '@sakilacustomer.org';
-        return filter_var($value, FILTER_VALIDATE_EMAIL) === $email_name;
-    }
-
+    /**
+     * Check if inputted value is a string
+     * @param mixed $value input
+     * @return bool
+     */
     public function isValidString($value)
     {
         if(!is_string($value)) {

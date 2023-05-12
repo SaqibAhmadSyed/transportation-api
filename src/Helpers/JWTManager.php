@@ -50,5 +50,4 @@ class JWTManager {
         //print_r($jwt);
         return $jwt;
     }
-
 }

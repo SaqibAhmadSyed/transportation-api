@@ -9,6 +9,11 @@ use Slim\Exception\HttpNotFoundException;
 
 class BixiAPIController extends WebServiceInvoker
 {
+    
+    /**
+     * gets the bixi bike data from the api and stores the data properly in the array
+     * @return array array of all the data
+     */
     public function getBikes()
     {
         $show_uri = 'http://api.citybik.es/v2/networks/bixi-montreal';

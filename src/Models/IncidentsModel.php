@@ -29,8 +29,13 @@ class IncidentsModel extends BaseModel{
         return $this->run($sql, [":incident_id"=> $incident_id])->fetchAll();
     }
 
-    public function getAllIncidents(){
-        $sql = "SELECT * FROM $this->table_name";
-        return $this->run($sql)->fetchAll();
+    public function getAllIncidents($filters){
+        $sql = "SELECT * FROM $this->table_name WHERE 1";
+        $query_value = [];
+        if (isset($filters["line_name"])) {
+            $sql .= " AND line_name LIKE CONCAT('%', :line_name,'%')";
+            $query_value[":line_name"] = $filters["line_name"];
+        }
+        return $this->paginate($sql, $query_value);
     }
 }

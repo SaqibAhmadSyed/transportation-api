@@ -2,8 +2,10 @@
 
 use Slim\Factory\AppFactory;
 use Vanier\Api\Helpers\JWTManager;
+use Vanier\Api\Middleware\AppLoggingMiddleware;
 
 define('APP_BASE_DIR', __DIR__);
+define('APP_LOG_DIR', APP_BASE_DIR.'/logs');
 // IMPORTANT: This file must be added to your .ignore file. 
 define('APP_ENV_CONFIG', 'config.env');
 
@@ -16,7 +18,9 @@ $app = AppFactory::create();
 //-- Add the routing and body parsing middleware.
 $app->addRoutingMiddleware();
 
-$jwt_secret = JWTManager::getSecretKey();
+// $app->add(new AppLoggingMiddleware());
+
+// $jwt_secret = JWTManager::getSecretKey();
 
 // $app->add(new Tuupola\Middleware\JwtAuthentication([
 //     'secret' => $jwt_secret,
@@ -53,3 +57,4 @@ require_once __DIR__ . '/src/Routes/api_routes.php';
 //$app->add($beforeMiddleware);
 // Run the app.
 $app->run();
+

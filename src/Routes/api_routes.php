@@ -1,4 +1,7 @@
 <?php
+use Monolog\Handler\FirePHPHandler;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
@@ -8,6 +11,7 @@ use Vanier\Api\Controllers\TripsController;
 use Vanier\Api\Controllers\RoutesController;
 use Vanier\Api\Controllers\StopsController;
 use Vanier\Api\Controllers\SchedulesController;
+
 
 // Import the app instance into this file's scope.
 global $app;
