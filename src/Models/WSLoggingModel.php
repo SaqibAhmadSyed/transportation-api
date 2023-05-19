@@ -5,14 +5,12 @@ use DateTime;
 use DateTimeZone;
 use Vanier\Api\Models\BaseModel;
 
-/**
- * A class that is used for logging user actions.
- *
- * @author Sleiman Rabah
- */
+
+
 class WSLoggingModel extends BaseModel {
 
-    private $table_name = "log";
+   
+    private $table_name = "ws_log";
 
     function __construct() {
         // Call the parent class and initialize the database connection settings.

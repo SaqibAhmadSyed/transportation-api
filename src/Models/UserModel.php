@@ -11,7 +11,7 @@ use Vanier\Api\Models\BaseModel;
  */
 class UserModel extends BaseModel {
 
-    private $table_name = "users";
+    private $table_name = "ws_users";
 
     /**
      * A model class for the `ws_users` database table.

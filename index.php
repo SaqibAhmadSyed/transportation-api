@@ -3,6 +3,7 @@
 use Slim\Factory\AppFactory;
 use Vanier\Api\Helpers\JWTManager;
 use Vanier\Api\Middleware\AppLoggingMiddleware;
+use Vanier\Api\Middleware\JWTAuthMiddleware;
 
 define('APP_BASE_DIR', __DIR__);
 define('APP_LOG_DIR', APP_BASE_DIR.'/logs');
@@ -18,26 +19,28 @@ $app = AppFactory::create();
 //-- Add the routing and body parsing middleware.
 $app->addRoutingMiddleware();
 
-// $app->add(new AppLoggingMiddleware());
+$jwt_secret = JWTManager::getSecretKey();
 
-// $jwt_secret = JWTManager::getSecretKey();
+$app->add(new Vanier\Api\Middleware\JWTAuthMiddleware([
+            'secret' => $jwt_secret,
+            'algorithm' => 'HS256',
+            'secure' => false, // only for localhost for prod and test env set true            
+            "path" => $api_base_path, // the base path of the API
+            "attribute" => "decoded_token_data",
+            "ignore" => ["$api_base_path/token", "$api_base_path/account"],
+            "error" => function ($response, $arguments) {
+                $data["status"] = "error";
+                $data["message"] = $arguments["message"];
+                $response->getBody()->write(
+                        json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT)
+                );
+                return $response->withHeader("Content-Type", "application/json;charset=utf-8");
+            }
+        ]));
 
-// $app->add(new Tuupola\Middleware\JwtAuthentication([
-//     'secret' => $jwt_secret,
-//     'algorithm' => 'HS256',
-//     'secure' => false, // only for localhost for prod and test env set true            
-//     "path" => $api_base_path, // the base path of the API
-//     "attribute" => "decoded_token_data",
-//     "ignore" => ["$api_base_path/token", "$api_base_path/account"],
-//     "error" => function ($response, $arguments) {
-//         $data["status"] = "error";
-//         $data["message"] = $arguments["message"];
-//         $response->getBody()->write(
-//             json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT)
-//         );
-//         return $response->withHeader("Content-Type", "application/json;charset=utf-8");
-//     }
-// ]));
+// Routes for user account, loggin in and token generation.
+$app->post("/token", "handleGetToken");
+$app->post("/account", "handleCreateUserAccount");
 
 $app->addBodyParsingMiddleware();
 //-- Add error handling middleware.
